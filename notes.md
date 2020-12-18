@@ -44,3 +44,21 @@ multiple parcels should be discounted.
 
 - "combination of discounts which saves the most money" is in direct
   conflict with the given example depending upon your interpretation
+- It is unclear whether "every 5th parcel" includes already discounted parcels
+in the count.
+  
+## Beyond
+- I would seek to clarify the requirements
+    - Ambiguities around discounts
+    - Ambiguities around weights
+- At this point I would probably make a newtype for `Cost`s and perhaps
+even a separate one for `DiscountCost`s. This would ensure all Costs are
+  positive while all discounts are negative. The `std::ops` traits such as
+  `Add` can be implemented between these types so that they are dealt
+  with correctly.
+- If appropriate (e.g requirements are changing very, very frequently
+  within each feature), I would make the whole system more data-oriented
+with a uniform configuration for prices, discounts, weight limits etc.
+- `impl Dispaly for Order` so a convenient receipt can be printed as implied 
+  in the requirements.
+- More tests, particular of the complicated discounting are required.

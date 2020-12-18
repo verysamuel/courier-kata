@@ -27,30 +27,30 @@ impl Order {
     }
 
     pub fn discount(&self) -> i32 {
-        let mut sorted_parcels = self.parcels.clone();
+        self.discount_for_type(ParcelType::Small, 4) + self.discount_for_type(ParcelType::Medium, 3)
+    }
+
+    fn discount_for_type(&self, parcel_type: ParcelType, nth_parcel_free: usize) -> i32 {
+        let mut sorted_parcels: Vec<_> = self
+            .parcels
+            .iter()
+            .filter(|parcel| parcel.parcel_type == parcel_type)
+            .collect();
         sorted_parcels.sort_by_key(|parcel| parcel.cost());
         // reversed so highest value parcels are discounted first.
         sorted_parcels.reverse();
 
         let mut discount = 0;
 
-         let number_of_medium_parcels = sorted_parcels
-            .iter()
-            .filter(|parcel| parcel.parcel_type == ParcelType::Medium)
-            .count();
-
-        let mut number_of_medium_parcel_discounts = dbg!(number_of_medium_parcels / 3);
-
-        for parcel in sorted_parcels
-            .iter()
-            .filter(|parcel| parcel.parcel_type == ParcelType::Medium)
-        {
-            if number_of_medium_parcel_discounts <= 0 {
+        let mut number_discounted = sorted_parcels.len() / nth_parcel_free;
+        for parcel in sorted_parcels {
+            if number_discounted == 0 {
                 break;
             }
-            number_of_medium_parcel_discounts -= 1;
+            number_discounted -= 1;
             discount -= parcel.cost();
         }
+
         discount
     }
 }
@@ -99,7 +99,7 @@ mod tests {
     }
 
     #[test]
-    fn dgds() {
+    fn many_medium_parcels_are_discounted_appropriately() {
         let parcels = vec![
             Parcel::new(
                 Dimensions::new(4.0, 3.0, 26.0).unwrap(),
