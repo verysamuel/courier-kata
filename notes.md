@@ -34,3 +34,6 @@ realistically I would seek to clarify this requirement.
 Perhaps it was simple because of the structure I have gone with so far.
 - Using an enum for the ParcelType has certainly been useful as the pattern
 matching has saved me by requiring patterns be exhaustive.
+- Actually, it has occured to me how my use of unreachable!() *could*
+be problematic as if I had not added the check for Heavy parcels I would 
+  have not been alerted of the problem by the compiler.
