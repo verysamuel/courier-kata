@@ -37,3 +37,10 @@ matching has saved me by requiring patterns be exhaustive.
 - Actually, it has occured to me how my use of unreachable!() *could*
 be problematic as if I had not added the check for Heavy parcels I would 
   have not been alerted of the problem by the compiler.
+  
+# Part 5
+This part is clearly ambiguous with the intent of how
+multiple parcels should be discounted.
+
+- "combination of discounts which saves the most money" is in direct
+  conflict with the given example depending upon your interpretation

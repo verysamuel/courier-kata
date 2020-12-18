@@ -1,4 +1,4 @@
-use crate::parcel::Parcel;
+use crate::parcel::{Parcel, ParcelType};
 use crate::shipping_speed::ShippingSpeed;
 
 /// This is the entry point for making new orders and printing receipts.
@@ -25,6 +25,34 @@ impl Order {
     pub fn partial_total_cost(&self) -> i32 {
         self.parcels.iter().map(|parcel| parcel.cost()).sum()
     }
+
+    pub fn discount(&self) -> i32 {
+        let mut sorted_parcels = self.parcels.clone();
+        sorted_parcels.sort_by_key(|parcel| parcel.cost());
+        // reversed so highest value parcels are discounted first.
+        sorted_parcels.reverse();
+
+        let mut discount = 0;
+
+         let number_of_medium_parcels = sorted_parcels
+            .iter()
+            .filter(|parcel| parcel.parcel_type == ParcelType::Medium)
+            .count();
+
+        let mut number_of_medium_parcel_discounts = dbg!(number_of_medium_parcels / 3);
+
+        for parcel in sorted_parcels
+            .iter()
+            .filter(|parcel| parcel.parcel_type == ParcelType::Medium)
+        {
+            if number_of_medium_parcel_discounts <= 0 {
+                break;
+            }
+            number_of_medium_parcel_discounts -= 1;
+            discount -= parcel.cost();
+        }
+        discount
+    }
 }
 
 #[cfg(test)]
@@ -39,8 +67,14 @@ mod tests {
     #[test]
     fn a_parcel_costs_double_with_speedy_shipping() {
         let parcels = vec![
-            Parcel::new(Dimensions::new(4.0, 3.0, 26.0).unwrap(), Weight::new(0.5).unwrap()),
-            Parcel::new(Dimensions::new(4.0, 3.0, 8.0).unwrap(), Weight::new(0.5).unwrap()),
+            Parcel::new(
+                Dimensions::new(4.0, 3.0, 26.0).unwrap(),
+                Weight::new(0.5).unwrap(),
+            ),
+            Parcel::new(
+                Dimensions::new(4.0, 3.0, 8.0).unwrap(),
+                Weight::new(0.5).unwrap(),
+            ),
         ];
         let order = Order::new(parcels, ShippingSpeed::Speedy);
         assert_eq!(order.partial_total_cost(), 1100);
@@ -50,11 +84,49 @@ mod tests {
     #[test]
     fn a_parcel_costs_the_the_same_with_normal_shipping() {
         let parcels = vec![
-            Parcel::new(Dimensions::new(4.0, 3.0, 26.0).unwrap(), Weight::new(0.5).unwrap()),
-            Parcel::new(Dimensions::new(4.0, 3.0, 8.0).unwrap(), Weight::new(0.5).unwrap()),
+            Parcel::new(
+                Dimensions::new(4.0, 3.0, 26.0).unwrap(),
+                Weight::new(0.5).unwrap(),
+            ),
+            Parcel::new(
+                Dimensions::new(4.0, 3.0, 8.0).unwrap(),
+                Weight::new(0.5).unwrap(),
+            ),
         ];
         let order = Order::new(parcels, ShippingSpeed::Normal);
         assert_eq!(order.partial_total_cost(), 1100);
         assert_eq!(order.total_cost(), 1100);
+    }
+
+    #[test]
+    fn dgds() {
+        let parcels = vec![
+            Parcel::new(
+                Dimensions::new(4.0, 3.0, 26.0).unwrap(),
+                Weight::new(3.0).unwrap(),
+            ),
+            Parcel::new(
+                Dimensions::new(4.0, 3.0, 32.0).unwrap(),
+                Weight::new(3.0).unwrap(),
+            ),
+            Parcel::new(
+                Dimensions::new(4.0, 3.0, 32.0).unwrap(),
+                Weight::new(3.0).unwrap(),
+            ),
+            Parcel::new(
+                Dimensions::new(4.0, 3.0, 45.0).unwrap(),
+                Weight::new(4.0).unwrap(),
+            ),
+            Parcel::new(
+                Dimensions::new(4.0, 3.0, 27.0).unwrap(),
+                Weight::new(4.0).unwrap(),
+            ),
+            Parcel::new(
+                Dimensions::new(4.0, 19.0, 5.0).unwrap(),
+                Weight::new(4.0).unwrap(),
+            ),
+        ];
+        let order = Order::new(parcels, ShippingSpeed::Normal);
+        assert_eq!(order.discount(), -1800);
     }
 }

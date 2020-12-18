@@ -1,7 +1,7 @@
 use crate::dimensions::Dimensions;
 use crate::weight::Weight;
 
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, Clone, PartialOrd, PartialEq)]
 #[non_exhaustive]
 pub struct Parcel {
     pub parcel_type: ParcelType,
@@ -74,7 +74,7 @@ impl Parcel {
     }
 }
 
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialOrd, PartialEq)]
 #[non_exhaustive]
 pub enum ParcelType {
     Small,
