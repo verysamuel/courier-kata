@@ -12,6 +12,7 @@ pub struct Parcel {
 impl Parcel {
     pub fn new(dimensions: Dimensions, weight: Weight) -> Self {
         let parcel_type = match dimensions {
+            _ if weight.as_f32() >= 50.0 => ParcelType::Heavy,
             _ if dimensions.all(|dimension| dimension < &10.0) => ParcelType::Small,
             _ if dimensions.all(|dimension| dimension < &50.0) => ParcelType::Medium,
             _ if dimensions.all(|dimension| dimension < &100.0) => ParcelType::Large,
@@ -38,6 +39,7 @@ impl Parcel {
             ParcelType::Medium => 800,
             ParcelType::Large => 1500,
             ParcelType::XL => 2500,
+            ParcelType::Heavy => 5000,
         }
     }
 
@@ -46,7 +48,8 @@ impl Parcel {
             // I have taken the spec to mean "for every *whole* kilogram over the weight limit
             // an additional charge of $2 applies.
             // The `200` below can be parameterised when required.
-            200 * (self.weight.as_f32() - self.weight_limit().as_f32()).floor() as i32
+            self.over_weight_limit_multiplier()
+                * (self.weight.as_f32() - self.weight_limit().as_f32()).floor() as i32
         } else {
             0
         }
@@ -58,8 +61,16 @@ impl Parcel {
             ParcelType::Medium => 3.0,
             ParcelType::Large => 6.0,
             ParcelType::XL => 10.0,
+            ParcelType::Heavy => 50.0,
         })
-            .unwrap()
+        .unwrap()
+    }
+
+    pub fn over_weight_limit_multiplier(&self) -> i32 {
+        match self.parcel_type {
+            ParcelType::Heavy => 100,
+            _ => 200,
+        }
     }
 }
 
@@ -70,6 +81,7 @@ pub enum ParcelType {
     Medium,
     Large,
     XL,
+    Heavy,
 }
 
 #[cfg(test)]
@@ -162,5 +174,28 @@ mod tests {
         );
         // 2500+200*floor(15.52-10) = 3500
         assert_eq!(parcel.cost(), 3500);
+    }
+
+    #[test]
+    fn a_heavy_parcel_costs_50_dollars() {
+        let parcel = Parcel::new(
+            Dimensions::new(4.0, 10.0, 50.0).unwrap(),
+            Weight::new(50.0).unwrap(),
+        );
+        assert_eq!(parcel.cost(), 5000);
+    }
+
+    #[test]
+    fn an_over_weight_limit_heavy_parcel_costs_1_dollars_more_per_kilogram() {
+        let parcel = Parcel::new(
+            Dimensions::new(4.0, 10.0, 50.0).unwrap(),
+            Weight::new(51.0).unwrap(),
+        );
+        assert_eq!(parcel.cost(), 5100);
+        let parcel = Parcel::new(
+            Dimensions::new(4.0, 10.0, 50.0).unwrap(),
+            Weight::new(63.14).unwrap(),
+        );
+        assert_eq!(parcel.cost(), 6300);
     }
 }

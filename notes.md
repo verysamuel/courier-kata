@@ -25,6 +25,12 @@ I recognise many aspects of my implementation so far could be different.
     as alternatives for converting between types.
   
 # Part 3
-Bit of an ambiguity in the requirements. +$2/kg could be discrete
+- Bit of an ambiguity in the requirements. +$2/kg could be discrete
 or continuous. I have arbitrarily chosen to go for discrete, though
 realistically I would seek to clarify this requirement.
+
+# Part 4
+- This part was quite simple really so not much to say.
+Perhaps it was simple because of the structure I have gone with so far.
+- Using an enum for the ParcelType has certainly been useful as the pattern
+matching has saved me by requiring patterns be exhaustive.
