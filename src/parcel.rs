@@ -2,13 +2,13 @@ use crate::dimensions::Dimensions;
 
 #[derive(Debug, PartialOrd, PartialEq)]
 #[non_exhaustive]
-struct Parcel {
-    parcel_type: ParcelType,
-    dimensions: Dimensions,
+pub struct Parcel {
+    pub parcel_type: ParcelType,
+    pub dimensions: Dimensions,
 }
 
 impl Parcel {
-    fn new(dimensions: Dimensions) -> Self {
+    pub fn new(dimensions: Dimensions) -> Self {
         let parcel_type = match dimensions {
             _ if dimensions.all(|dimension| dimension < &10.0) => ParcelType::Small,
             _ if dimensions.all(|dimension| dimension < &50.0) => ParcelType::Medium,
@@ -25,7 +25,7 @@ impl Parcel {
         }
     }
 
-    fn cost(&self) -> i32 {
+    pub fn cost(&self) -> i32 {
         match self.parcel_type {
             ParcelType::Small => 300,
             ParcelType::Medium => 800,
@@ -37,7 +37,7 @@ impl Parcel {
 
 #[derive(Debug, PartialOrd, PartialEq)]
 #[non_exhaustive]
-enum ParcelType {
+pub enum ParcelType {
     Small,
     Medium,
     Large,
