@@ -16,3 +16,11 @@ Things that may be important to consider before I start:
 - Parcel types
     - Making expansion of requirements (new types of parcels) simple enough
       without too much up-front effort.
+      
+# Part 2
+I recognise many aspects of my implementation so far could be different.
+- It would be totally valid to use a trait and unit structs (or even a map)
+  to represent parcel types instead of an enum.
+- I could instead implement the traits From<> and TryFrom<> where appropriate
+    as alternatives for converting between types.
+  
