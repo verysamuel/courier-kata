@@ -34,12 +34,13 @@ mod tests {
     use crate::shipping_speed::ShippingSpeed;
 
     use super::Order;
+    use crate::weight::Weight;
 
     #[test]
     fn a_parcel_costs_double_with_speedy_shipping() {
         let parcels = vec![
-            Parcel::new(Dimensions::new(4.0, 3.0, 26.0).unwrap()),
-            Parcel::new(Dimensions::new(4.0, 3.0, 8.0).unwrap()),
+            Parcel::new(Dimensions::new(4.0, 3.0, 26.0).unwrap(), Weight::new(0.5).unwrap()),
+            Parcel::new(Dimensions::new(4.0, 3.0, 8.0).unwrap(), Weight::new(0.5).unwrap()),
         ];
         let order = Order::new(parcels, ShippingSpeed::Speedy);
         assert_eq!(order.partial_total_cost(), 1100);
@@ -49,8 +50,8 @@ mod tests {
     #[test]
     fn a_parcel_costs_the_the_same_with_normal_shipping() {
         let parcels = vec![
-            Parcel::new(Dimensions::new(4.0, 3.0, 26.0).unwrap()),
-            Parcel::new(Dimensions::new(4.0, 3.0, 8.0).unwrap()),
+            Parcel::new(Dimensions::new(4.0, 3.0, 26.0).unwrap(), Weight::new(0.5).unwrap()),
+            Parcel::new(Dimensions::new(4.0, 3.0, 8.0).unwrap(), Weight::new(0.5).unwrap()),
         ];
         let order = Order::new(parcels, ShippingSpeed::Normal);
         assert_eq!(order.partial_total_cost(), 1100);

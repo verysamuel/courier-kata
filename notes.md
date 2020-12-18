@@ -24,3 +24,7 @@ I recognise many aspects of my implementation so far could be different.
 - I could instead implement the traits From<> and TryFrom<> where appropriate
     as alternatives for converting between types.
   
+# Part 3
+Bit of an ambiguity in the requirements. +$2/kg could be discrete
+or continuous. I have arbitrarily chosen to go for discrete, though
+realistically I would seek to clarify this requirement.
